@@ -1,0 +1,34 @@
+# Logs & debugging
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+*.log
+logs
+
+# Editor & OS-specific files
+.idea/
+.vscode/
+.DS_Store
+!.vscode/extensions.json
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Node modules and dependencies
+node_modules/
+dist/
+
+# Vite cache
+.vite/
+
+# pnpm store
+.pnpm-store/
+
+# Env files
+.env
+.env.local
+.env.*.local

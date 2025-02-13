@@ -1,0 +1,10 @@
+# Artifacts:
+build
+coverage
+pnpm-lock.yaml
+README.md
+
+# Deps
+node_modules
+public
+src/assets
