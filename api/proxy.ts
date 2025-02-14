@@ -19,7 +19,10 @@ export default async function handler(req: Request) {
   }
 
   const url = new URL(req.url);
-  const backendURL = URLS.BASE + url.pathname + url.search;
+  const backendURL = URLS.BASE + url.pathname.replace("/api", "") + url.search;
+
+  console.log(`Request URL: ${url}`);
+  console.log(`Backend URL: ${backendURL}`);
 
   try {
     const backendResponse = await fetch(backendURL, {
