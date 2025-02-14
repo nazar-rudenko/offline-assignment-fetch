@@ -1,23 +1,19 @@
-import { VercelRequest, VercelResponse } from "@vercel/node";
 import { URLS } from "../src/services/dogApi/consts";
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, DELETE, OPTIONS",
-  );
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "Content-Type, Authorization, X-Requested-With",
-  );
-  res.setHeader("Access-Control-Allow-Credentials", "true");
+export const config = {
+  runtime: "edge",
+};
 
+export default async function handler(req: Request) {
   if (req.method === "OPTIONS") {
-    return res.status(200).end();
+    return new Response(null, {
+      status: 204,
+      headers: getCorsHeaders(),
+    });
   }
 
-  const backendURL = URLS.BASE + req.url;
+  const url = new URL(req.url);
+  const backendURL = URLS.BASE + url.pathname + url.search;
 
   console.log("Request URL:", req.url);
   console.log("Backend URL:", backendURL);
@@ -25,20 +21,40 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     const backendResponse = await fetch(backendURL, {
       method: req.method,
-      headers: req.headers as HeadersInit,
-      body:
-        req.method !== "GET" && req.method !== "HEAD" ? req.body : undefined,
+      headers: req.headers,
+      body: ["GET", "HEAD"].includes(req.method) ? undefined : req.body,
     });
 
     const responseHeaders = new Headers(backendResponse.headers);
-    responseHeaders.set("Access-Control-Allow-Credentials", "true");
-    responseHeaders.set("Access-Control-Allow-Origin", "*");
+    Object.entries(getCorsHeaders()).forEach(([key, value]) => {
+      responseHeaders.set(key, value);
+    });
 
-    res.writeHead(backendResponse.status, Object.fromEntries(responseHeaders));
-
-    void backendResponse.body?.pipeTo(res as any);
+    return new Response(backendResponse.body, {
+      status: backendResponse.status,
+      headers: responseHeaders,
+    });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Failed to fetch from backend" });
+    return new Response(
+      JSON.stringify({ error: "Failed to fetch from backend" }),
+      {
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+          ...getCorsHeaders(),
+        },
+      },
+    );
   }
+}
+
+function getCorsHeaders() {
+  return {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+    "Access-Control-Allow-Headers":
+      "Content-Type, Authorization, X-Requested-With",
+    "Access-Control-Allow-Credentials": "true",
+  };
 }
