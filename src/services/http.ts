@@ -57,7 +57,7 @@ async function http<R = undefined>({
     request.headers = { ...request.headers, ...headers };
   }
 
-  let url = `${URLS.BASE}${path}`;
+  let url = `${URLS.PROXY}${path}`;
 
   const serializedParams = params && serializeParams(params);
   if (serializedParams) {

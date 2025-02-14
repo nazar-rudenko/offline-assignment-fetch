@@ -1,4 +1,5 @@
 export const URLS = {
+  PROXY: "https://offline-assignment-fetch.vercel.app/api/proxy",
   BASE: "https://frontend-take-home-service.fetch.com",
   AUTH: {
     LOGIN: "/auth/login",
