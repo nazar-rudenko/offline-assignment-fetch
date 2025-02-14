@@ -2,7 +2,7 @@ const DogCardSkeleton = () => {
   return (
     <div className="card bg-base-100 shadow-md rounded-lg overflow-hidden h-[380px] animate-pulse">
       <img
-        src="/src/assets/dog_paw.png"
+        src="/dog_paw.png"
         alt="Dog Paw Placeholder"
         className="h-48 w-full object-contain filter opacity-20 aspect-square"
       />
