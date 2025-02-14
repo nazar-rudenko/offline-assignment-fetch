@@ -4,6 +4,9 @@ import { URLS } from "../src/services/dogApi/consts";
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const backendURL = URLS.BASE + req.url;
 
+  console.log("Request URL:", req.url);
+  console.log("Backend URL:", backendURL);
+
   try {
     const backendResponse = await fetch(backendURL, {
       method: req.method,
