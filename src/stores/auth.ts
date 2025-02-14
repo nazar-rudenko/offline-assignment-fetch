@@ -4,12 +4,12 @@ import { auth, logout } from "../services/dogApi/dogApi.ts";
 import { PERSISTED_STORAGE_KEYS } from "./constants.ts";
 import { useUiStore } from "./ui.ts";
 
-type User = {
+export type User = {
   name: string;
   email: string;
 };
 
-type State = {
+export type State = {
   user: User | null;
   expiresAt: number;
 };
