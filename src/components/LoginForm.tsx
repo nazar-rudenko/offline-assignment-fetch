@@ -1,12 +1,8 @@
 import { KeyboardEvent, useState } from "react";
 import { useNavigate } from "react-router";
-import {
-  LoginSchema,
-  EmailSchema,
-  NameSchema,
-} from "../services/validation.ts";
-import { useAuthStore, User } from "../stores/auth.ts";
-import { useForm } from "../hooks/useForm.ts";
+import { LoginSchema, EmailSchema, NameSchema } from "../services/validation";
+import { useAuthStore, User } from "../stores/auth";
+import { useForm } from "../hooks/useForm";
 
 const LoginForm = () => {
   const { values, errors, handleChange, validateForm, validateField } = useForm(

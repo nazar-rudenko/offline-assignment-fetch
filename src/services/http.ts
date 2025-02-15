@@ -1,13 +1,13 @@
 import { URLS } from "./dogApi/consts.ts";
 
-type SortQueryParam = { field: string; order: "asc" | "desc" };
-type ArrayQueryParam = string[] | number[];
-type QueryParams = Record<
+export type SortQueryParam = { field: string; order: "asc" | "desc" };
+export type ArrayQueryParam = string[] | number[];
+export type QueryParams = Record<
   string,
   string | number | boolean | ArrayQueryParam | SortQueryParam
 >;
 
-type HttpServiceParams = {
+export type HttpServiceParams = {
   path: string;
   method: "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
   body?: unknown;
@@ -16,7 +16,7 @@ type HttpServiceParams = {
   signal?: AbortSignal;
 };
 
-const serializeParams = (params: QueryParams): string => {
+export const serializeParams = (params: QueryParams): string => {
   if (params.sort) {
     const { field: fieldToSort, order } = params.sort as SortQueryParam;
     params.sort = `${fieldToSort}:${order}`;

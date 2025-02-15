@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { auth, logout } from "../services/dogApi/dogApi.ts";
+import { auth, logout } from "../services/dogApi/dogApi";
 import { PERSISTED_STORAGE_KEYS } from "./constants.ts";
 import { useUiStore } from "./ui.ts";
 

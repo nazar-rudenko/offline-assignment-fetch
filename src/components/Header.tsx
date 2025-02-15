@@ -4,8 +4,8 @@ import ThemeSwitch from "./ThemeSwitch.tsx";
 import UserStatus from "./UserStatus.tsx";
 import LikedDogsModal from "./LikedDogsModal.tsx";
 import Logo from "./Logo.tsx";
-import { useDogStore } from "../stores/dog.ts";
-import { useAuthStore } from "../stores/auth.ts";
+import { useDogStore } from "../stores/dog";
+import { useAuthStore } from "../stores/auth";
 
 const Header = () => {
   const likedDogsCount = useDogStore((state) => state.likedDogs.length);

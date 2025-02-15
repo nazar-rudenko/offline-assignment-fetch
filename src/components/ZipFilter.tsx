@@ -1,5 +1,5 @@
 import { ChangeEvent, useState } from "react";
-import { useDogStore } from "../stores/dog.ts";
+import { useDogStore } from "../stores/dog";
 
 const ZipFilter = () => {
   const { updateFilter, filter } = useDogStore();

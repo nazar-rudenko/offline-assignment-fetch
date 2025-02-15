@@ -1,13 +1,9 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import {
-  fetchBreeds,
-  searchDogs,
-  matchDogs,
-} from "../services/dogApi/dogApi.ts";
-import { Dog } from "../services/dogApi/dtos.ts";
-import { PERSISTED_STORAGE_KEYS } from "./constants.ts";
-import { useUiStore } from "./ui.ts";
+import { fetchBreeds, searchDogs, matchDogs } from "../services/dogApi/dogApi";
+import { Dog } from "../services/dogApi/dtos";
+import { PERSISTED_STORAGE_KEYS } from "./constants";
+import { useUiStore } from "./ui";
 
 export const PAGE_SIZE = 12;
 

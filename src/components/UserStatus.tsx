@@ -1,4 +1,4 @@
-import { useAuthStore } from "../stores/auth.ts";
+import { useAuthStore } from "../stores/auth";
 import { LogOut } from "lucide-react";
 import { useNavigate } from "react-router";
 

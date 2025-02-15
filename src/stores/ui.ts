@@ -23,7 +23,7 @@ export const useUiStore = create<State & Actions>((set) => ({
     message = GENERIC_ERROR_MESSAGE,
     duration = DISPLAY_ERROR_MS,
   ) => {
-    const messageId = setTimeout(() => {
+    const messageId = window.setTimeout(() => {
       set((state) => ({
         errors: state.errors.filter((error) => error.id !== messageId),
       }));

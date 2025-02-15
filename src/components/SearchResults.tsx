@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { useDogStore, PAGE_SIZE } from "../stores/dog.ts";
+import { useDogStore, PAGE_SIZE } from "../stores/dog";
 import SortControls from "./SortControls.tsx";
 import Pagination from "./Pagination.tsx";
 import DogCard from "./DogCard.tsx";
@@ -26,7 +26,10 @@ const SearchResults = () => {
     }
 
     if (withThrottle) {
-      throttleTimerId = setTimeout(execRequest, THROTTLE_MS);
+      throttleTimerId = window.setTimeout(
+        () => void execRequest(),
+        THROTTLE_MS,
+      );
       return;
     }
     void execRequest();

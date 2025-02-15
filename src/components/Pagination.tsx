@@ -4,8 +4,8 @@ import {
   ChevronLast,
   ChevronRight,
 } from "lucide-react";
-import { useDogStore } from "../stores/dog.ts";
-import { getPaginationPages } from "../services/utils.ts";
+import { useDogStore } from "../stores/dog";
+import { getPaginationPages } from "../services/utils";
 
 const CONTROLS_LIMIT = 5;
 

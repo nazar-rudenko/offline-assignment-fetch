@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useDogStore } from "../stores/dog.ts";
-import { Dog } from "../services/dogApi/dtos.ts";
+import { useDogStore } from "../stores/dog";
+import { Dog } from "../services/dogApi/dtos";
 
 type LikedDogsModalProps = {
   onClose: () => void;

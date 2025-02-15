@@ -1,5 +1,5 @@
 import { useEffect, useState, ChangeEvent } from "react";
-import { useDogStore, Filter } from "../stores/dog.ts";
+import { useDogStore, Filter } from "../stores/dog";
 
 type InputEvent = ChangeEvent<HTMLInputElement>;
 

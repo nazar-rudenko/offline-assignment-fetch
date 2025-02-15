@@ -1,5 +1,5 @@
 import { Frown } from "lucide-react";
-import { useDogStore } from "../stores/dog.ts";
+import { useDogStore } from "../stores/dog";
 
 const EmptyDogsList = () => {
   const updateFilter = useDogStore((state) => state.updateFilter);

@@ -1,5 +1,5 @@
 import ErrorToast from "./ErrorToast.tsx";
-import { useUiStore } from "../stores/ui.ts";
+import { useUiStore } from "../stores/ui";
 
 const ToastContainer = () => {
   const errors = useUiStore((state) => state.errors);

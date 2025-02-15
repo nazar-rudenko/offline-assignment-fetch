@@ -1,5 +1,5 @@
 import { ChangeEvent } from "react";
-import { useDogStore, Sort } from "../stores/dog.ts";
+import { useDogStore, Sort } from "../stores/dog";
 
 type SelectEvent = ChangeEvent<HTMLSelectElement>;
 

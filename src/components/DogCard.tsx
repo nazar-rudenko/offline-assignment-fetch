@@ -1,7 +1,7 @@
 import { SyntheticEvent } from "react";
 import { Heart } from "lucide-react";
-import { Dog } from "../services/dogApi/dtos.ts";
-import { useDogStore } from "../stores/dog.ts";
+import { Dog } from "../services/dogApi/dtos";
+import { useDogStore } from "../stores/dog";
 
 type DogCardProps = {
   dog: Dog;
