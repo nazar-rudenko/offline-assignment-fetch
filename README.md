@@ -73,3 +73,32 @@ This will check your code for any style or quality issues and provide feedback.
 ## License
 
 This project is licensed under NOLICENSE - no rights are granted.
+
+## Auth Cookie Note
+
+The application uses an HTTP-only authentication cookie to manage user sessions. As this is a test assignment:
+
+- The cookie is **not marked as secure** (`Secure=false`).
+- The **SameSite** attribute is set to **`None`** (which means it can be accessed across different sites).
+
+While this allows the API to be used in local environments and deployed to my domain, browsers may treat this cookie as a tracking cookie, potentially leading to issues if **tracking** is disabled.
+
+For example, on iOS devices using Chrome and Safari, tracking is disabled by default, which might interfere with the cookie functionality. Please ensure cookies are allowed for this to work properly, especially in these environments.
+
+### Enabling Cookies for Chrome and Safari on iOS
+
+If you're using Chrome or Safari on iOS, follow these steps to allow authentication cookies:
+
+#### **Chrome (iOS)**
+1. Open **Settings** on your iPhone/iPad.
+2. Scroll down and tap **Apps**.
+3. Select **Chrome**.
+4. Find **Allow Cross-Website Tracking** and enable it.
+
+#### **Safari (iOS)**
+1. Open **Settings** on your iPhone/iPad.
+2. Scroll down and tap **Apps**.
+3. Select **Safari**.
+4. Find **Prevent Cross-Site Tracking** and disable it.
+
+Enabling these settings will allow the authentication cookie to function correctly.
