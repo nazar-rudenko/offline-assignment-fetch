@@ -7,21 +7,20 @@ export const config = {
 export default async function handler(req: Request) {
   const origin = req.headers.get("Origin");
   const requestedBy = req.headers.get("X-Requested-By");
-  const cookies = req.headers.get("Cookies");
+  const cookie = req.headers.get("Cookie");
 
   // TODO: debugging
-  const authCookie =
-    cookies &&
-    cookies
+  const authenticated =
+    cookie &&
+    cookie
       .split(", ")
-      .find((cookie) => cookie.startsWith("fetch-access-token="));
+      .find((cookieValue) => cookieValue.startsWith("fetch-access-token="));
 
-  console.log(`Auth: ${!!authCookie}`);
+  console.log(`Auth: ${!!authenticated}`);
 
   if (requestedBy !== "dogs-app") {
     return new Response(JSON.stringify({ error: "Invalid Request" }), {
       status: 403,
-      headers: { "Content-Type": "application/json" },
     });
   }
 
@@ -36,6 +35,8 @@ export default async function handler(req: Request) {
   const backendURL = API_URL + url.pathname.replace("/api", "") + url.search;
 
   try {
+    req.headers.delete("X-Requested-By");
+
     const backendResponse = await fetch(backendURL, {
       method: req.method,
       headers: req.headers,
@@ -43,22 +44,20 @@ export default async function handler(req: Request) {
     });
 
     const responseHeaders = new Headers(backendResponse.headers);
+    responseHeaders.delete("Set-Cookie");
     Object.entries(getCorsHeaders(origin)).forEach(([key, value]) => {
       responseHeaders.set(key, value);
     });
 
-    const setCookieHeaders = backendResponse.headers.get("Set-Cookie");
-    if (setCookieHeaders && origin) {
-      const modifiedCookies = setCookieHeaders
-        .split(", ")
+    const setCookieValues = backendResponse.headers.getSetCookie();
+    if (setCookieValues.length && origin) {
+      setCookieValues
         .map((cookie) =>
           cookie.startsWith("fetch-access-token=")
             ? makeCookieSecureAgain(cookie, origin)
             : cookie,
         )
-        .join(", ");
-
-      responseHeaders.set("Set-Cookie", modifiedCookies);
+        .forEach((cookie) => responseHeaders.set("Set-Cookie", cookie));
     }
 
     return new Response(backendResponse.body, {
@@ -106,6 +105,6 @@ function makeCookieSecureAgain(cookie: string, origin: string): string {
     .replace(/;\s*HttpOnly/i, "")
     .replace(/;\s*Domain=[^;]*/i, "")
     .replace(/;\s*Path=[^;]*/i, "")
-    .concat(expiresValue)
+    .replace(/;\s*Expires=[^;]*/i, expiresValue)
     .concat(`; Secure; HttpOnly; SameSite=Strict; Domain=${domain}; Path=/`);
 }
