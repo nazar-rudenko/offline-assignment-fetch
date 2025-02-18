@@ -44,7 +44,11 @@ async function http<R = undefined>({
   const request: RequestInit = {
     credentials: "include",
     method,
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      // fixme: in ideal world there must be hmac or something
+      "X-Requested-By": "dogs-app",
+    },
   };
 
   if (body) {

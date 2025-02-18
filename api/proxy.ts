@@ -1,39 +1,29 @@
-const DOMAINS = {
-  LOCAL: "http://localhost:5173",
-  API: "https://frontend-take-home-service.fetch.com",
-  DEPLOYMENT: "https://offline-assignment-fetch.vercel.app",
-};
+const API_URL = "https://frontend-take-home-service.fetch.com";
 
 export const config = {
   runtime: "edge",
 };
 
 export default async function handler(req: Request) {
-  const origin = req.headers.get("origin");
+  const origin = req.headers.get("Origin");
+  const requestedBy = req.headers.get("X-Requested-By");
 
-  if (!origin) {
-    return new Response(JSON.stringify({ error: "Missing Origin header" }), {
-      status: 400,
+  if (requestedBy !== "dogs-app") {
+    return new Response(JSON.stringify({ error: "Invalid Request" }), {
+      status: 403,
       headers: { "Content-Type": "application/json" },
     });
-  }
-
-  const allowedOrigins = [DOMAINS.LOCAL, DOMAINS.DEPLOYMENT];
-
-  if (isMyVercelPreview(origin)) {
-    allowedOrigins.push(origin);
   }
 
   if (req.method === "OPTIONS") {
     return new Response(null, {
       status: 204,
-      headers: getCorsHeaders(origin, allowedOrigins),
+      headers: getCorsHeaders(origin),
     });
   }
 
   const url = new URL(req.url);
-  const backendURL =
-    DOMAINS.API + url.pathname.replace("/api", "") + url.search;
+  const backendURL = API_URL + url.pathname.replace("/api", "") + url.search;
 
   try {
     const backendResponse = await fetch(backendURL, {
@@ -44,14 +34,12 @@ export default async function handler(req: Request) {
     });
 
     const responseHeaders = new Headers(backendResponse.headers);
-    Object.entries(getCorsHeaders(origin, allowedOrigins)).forEach(
-      ([key, value]) => {
-        responseHeaders.set(key, value);
-      },
-    );
+    Object.entries(getCorsHeaders(origin)).forEach(([key, value]) => {
+      responseHeaders.set(key, value);
+    });
 
     const setCookieHeaders = backendResponse.headers.get("Set-Cookie");
-    if (setCookieHeaders) {
+    if (setCookieHeaders && origin) {
       const modifiedCookies = setCookieHeaders
         .split(", ")
         .map((cookie) =>
@@ -75,26 +63,23 @@ export default async function handler(req: Request) {
         status: 500,
         headers: {
           "Content-Type": "application/json",
-          ...getCorsHeaders(origin, allowedOrigins),
+          ...getCorsHeaders(origin),
         },
       },
     );
   }
 }
 
-function getCorsHeaders(origin: string | null, allowedOrigins: string[]) {
-  const headers = {
+function getCorsHeaders(origin: string | null) {
+  const headers: Record<string, string> = {
     "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
     "Access-Control-Allow-Headers":
       "Content-Type, Authorization, X-Requested-With",
     "Access-Control-Allow-Credentials": "true",
   };
 
-  if (origin && allowedOrigins.includes(origin)) {
-    return {
-      ...headers,
-      "Access-Control-Allow-Origin": origin,
-    };
+  if (origin) {
+    headers["Access-Control-Allow-Origin"] = origin;
   }
 
   return headers;
@@ -107,13 +92,5 @@ function makeCookieSecureAgain(cookie: string, origin: string): string {
     .replace(/;\s*SameSite=[^;]*/i, "")
     .replace(/;\s*HttpOnly/i, "")
     .replace(/;\s*Domain=[^;]*/i, "")
-    .concat(`; Secure; HttpOnly; SameSite=Lax; Domain=${domain}; Path=/`);
-}
-
-function isMyVercelPreview(origin: string): boolean {
-  const hostname = new URL(origin).hostname;
-  return (
-    hostname.includes("offline-assignment-fetch") &&
-    hostname.endsWith(".nxracs-projects.vercel.app")
-  );
+    .concat(`; Secure; HttpOnly; SameSite=Strict; Domain=${domain}; Path=/`);
 }
