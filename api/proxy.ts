@@ -7,16 +7,6 @@ export const config = {
 export default async function handler(req: Request) {
   const origin = req.headers.get("Origin");
   const requestedBy = req.headers.get("X-Requested-By");
-  const cookie = req.headers.get("Cookie");
-
-  // TODO: debugging
-  const authenticated =
-    cookie &&
-    cookie
-      .split(", ")
-      .find((cookieValue) => cookieValue.startsWith("fetch-access-token="));
-
-  console.log(`Auth: ${!!authenticated}`);
 
   if (requestedBy !== "dogs-app") {
     return new Response(JSON.stringify({ error: "Invalid Request" }), {
@@ -36,19 +26,20 @@ export default async function handler(req: Request) {
 
   try {
     req.headers.delete("X-Requested-By");
-
     const backendResponse = await fetch(backendURL, {
       method: req.method,
       headers: req.headers,
       body: ["GET", "HEAD"].includes(req.method) ? undefined : req.body,
     });
 
+    // Add CORS headers and remove original Set-Cookie
     const responseHeaders = new Headers(backendResponse.headers);
     responseHeaders.delete("Set-Cookie");
     Object.entries(getCorsHeaders(origin)).forEach(([key, value]) => {
       responseHeaders.set(key, value);
     });
 
+    // Modify auth cookie and pack the rest of them back to response
     const setCookieValues = backendResponse.headers.getSetCookie();
     if (setCookieValues.length && origin) {
       setCookieValues
@@ -65,16 +56,13 @@ export default async function handler(req: Request) {
       headers: responseHeaders,
     });
   } catch (err) {
-    return new Response(
-      JSON.stringify({ error: "Failed to fetch from backend" }),
-      {
-        status: 500,
-        headers: {
-          "Content-Type": "application/json",
-          ...getCorsHeaders(origin),
-        },
+    return new Response(JSON.stringify({ error: "Failed to fetch" }), {
+      status: 500,
+      headers: {
+        "Content-Type": "application/json",
+        ...getCorsHeaders(origin),
       },
-    );
+    });
   }
 }
 
@@ -93,6 +81,7 @@ function getCorsHeaders(origin: string | null) {
   return headers;
 }
 
+// Make browser happy and willing to give cookie back
 function makeCookieSecureAgain(cookie: string, origin: string): string {
   const domain = new URL(origin).hostname;
 
