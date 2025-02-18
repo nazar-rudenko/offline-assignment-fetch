@@ -96,10 +96,16 @@ function getCorsHeaders(origin: string | null) {
 
 function makeCookieSecureAgain(cookie: string, origin: string): string {
   const domain = new URL(origin).hostname;
+
+  let expiresMatch = cookie.match(/;\s*expires=([^;]+)/i);
+  let expiresValue = expiresMatch ? `; Expires=${expiresMatch[1]}` : "";
+
   return cookie
     .replace(/;\s*Secure/i, "")
     .replace(/;\s*SameSite=[^;]*/i, "")
     .replace(/;\s*HttpOnly/i, "")
     .replace(/;\s*Domain=[^;]*/i, "")
+    .replace(/;\s*Path=[^;]*/i, "")
+    .concat(expiresValue)
     .concat(`; Secure; HttpOnly; SameSite=Strict; Domain=${domain}; Path=/`);
 }
