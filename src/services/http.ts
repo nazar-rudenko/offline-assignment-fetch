@@ -1,5 +1,3 @@
-import { URLS } from "./dogApi/consts.ts";
-
 export type SortQueryParam = { field: string; order: "asc" | "desc" };
 export type ArrayQueryParam = string[] | number[];
 export type QueryParams = Record<
@@ -8,7 +6,7 @@ export type QueryParams = Record<
 >;
 
 export type HttpServiceParams = {
-  path: string;
+  url: string;
   method: "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
   body?: unknown;
   params?: QueryParams;
@@ -37,7 +35,7 @@ export const serializeParams = (params: QueryParams): string => {
 };
 
 async function http<R = undefined>({
-  path,
+  url,
   method,
   body,
   params,
@@ -46,7 +44,11 @@ async function http<R = undefined>({
   const request: RequestInit = {
     credentials: "include",
     method,
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      // fixme: in ideal world there must be hmac or something
+      "X-Requested-By": "dogs-app",
+    },
   };
 
   if (body) {
@@ -56,8 +58,6 @@ async function http<R = undefined>({
   if (headers) {
     request.headers = { ...request.headers, ...headers };
   }
-
-  let url = `${URLS.PROXY}${path}`;
 
   const serializedParams = params && serializeParams(params);
   if (serializedParams) {
@@ -69,7 +69,7 @@ async function http<R = undefined>({
   if (!response.ok) {
     const errorMessage = await response.text();
     throw new Error(
-      `Network request failed ${response.status}: ${method} ${path} - ${errorMessage}`,
+      `Network request failed ${response.status}: ${method} ${url} - ${errorMessage}`,
     );
   }
 

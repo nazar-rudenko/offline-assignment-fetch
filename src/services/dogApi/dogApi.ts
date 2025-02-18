@@ -1,12 +1,14 @@
 import http from "../http.ts";
-import { URLS } from "./consts.ts";
+import { PATHS } from "./consts.ts";
 import type { Dog, SearchDogsResponse, MatchedDog } from "./dtos.ts";
 import type { AuthParams, SearchDogParams } from "./types.ts";
+
+const BASE_URL = import.meta.env.VITE_DOG_API_BASE_URL;
 
 export const auth = ({ email, name }: AuthParams) =>
   http<void>({
     method: "POST",
-    path: URLS.AUTH.LOGIN,
+    url: `${BASE_URL}${PATHS.AUTH.LOGIN}`,
     body: {
       email,
       name,
@@ -16,13 +18,13 @@ export const auth = ({ email, name }: AuthParams) =>
 export const logout = () =>
   http<void>({
     method: "POST",
-    path: URLS.AUTH.LOGOUT,
+    url: `${BASE_URL}${PATHS.AUTH.LOGOUT}`,
   });
 
 export const fetchBreeds = () =>
   http<[string]>({
     method: "GET",
-    path: URLS.DOGS.BREEDS,
+    url: `${BASE_URL}${PATHS.DOGS.BREEDS}`,
   });
 
 const searchAbortController = new AbortController();
@@ -32,13 +34,13 @@ export const searchDogs = async (params: SearchDogParams) => {
 
   const { resultIds, total } = await http<SearchDogsResponse>({
     method: "GET",
-    path: URLS.DOGS.SEARCH,
+    url: `${BASE_URL}${PATHS.DOGS.SEARCH}`,
     params,
     signal: searchAbortController.signal,
   });
   const dogs = await http<[Dog]>({
     method: "POST",
-    path: URLS.DOGS.LIST,
+    url: `${BASE_URL}${PATHS.DOGS.LIST}`,
     body: resultIds,
     signal: searchAbortController.signal,
   });
@@ -49,6 +51,6 @@ export const searchDogs = async (params: SearchDogParams) => {
 export const matchDogs = (dogIds: [string]) =>
   http<MatchedDog>({
     method: "POST",
-    path: URLS.DOGS.MATCH,
+    url: `${BASE_URL}${PATHS.DOGS.MATCH}`,
     body: dogIds,
   });

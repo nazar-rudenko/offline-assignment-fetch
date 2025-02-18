@@ -1,6 +1,5 @@
 import { vi, expect, it, describe, beforeEach, afterAll } from "vitest";
 import http, { QueryParams, serializeParams } from "./http";
-import { URLS } from "./dogApi/consts.ts";
 
 describe("serializeParams", () => {
   it("should serialize a query with simple parameters", () => {
@@ -54,9 +53,9 @@ describe("http", () => {
     const responseData = { data: "some data" };
     fetchMock.mockResolvedValueOnce(mockResponse(200, responseData));
 
-    const result = await http({ path: "/test", method: "GET" });
+    const result = await http({ url: "/test", method: "GET" });
     expect(result).toEqual(responseData);
-    expect(fetchMock).toHaveBeenCalledWith(`${URLS.PROXY}/test`, {
+    expect(fetchMock).toHaveBeenCalledWith(`/test`, {
       credentials: "include",
       method: "GET",
       headers: { "Content-Type": "application/json" },
@@ -66,7 +65,7 @@ describe("http", () => {
   it("should handle 204 No Content response", async () => {
     fetchMock.mockResolvedValueOnce(mockResponse(204, ""));
 
-    const result = await http({ path: "/test", method: "POST" });
+    const result = await http({ url: "/test", method: "POST" });
     expect(result).toBeNull();
   });
 
@@ -75,7 +74,7 @@ describe("http", () => {
     fetchMock.mockResolvedValueOnce(mockResponse(400, errorMessage));
 
     try {
-      await http({ path: "/test", method: "GET" });
+      await http({ url: "/test", method: "GET" });
     } catch (error: unknown) {
       expect((error as Error).message).toBe(
         "Network request failed 400: GET /test - Bad Request",
@@ -91,14 +90,14 @@ describe("http", () => {
     fetchMock.mockResolvedValueOnce(mockResponse(200, responseData));
 
     const result = await http({
-      path: "/test",
+      url: "/test",
       method: "POST",
       body,
       headers: customHeaders,
     });
 
     expect(result).toEqual(responseData);
-    expect(fetchMock).toHaveBeenCalledWith(`${URLS.PROXY}/test`, {
+    expect(fetchMock).toHaveBeenCalledWith(`/test`, {
       credentials: "include",
       method: "POST",
       headers: {

@@ -70,35 +70,28 @@ pnpm lint
 
 This will check your code for any style or quality issues and provide feedback.
 
+## Edge Function for Cookie Handling in Vercel Deployment
+
+In this project, we use an **Edge Function** deployed on Vercel to spoof the **Set-Cookie** header from the backend and ensure it is sent correctly in browsers with strict security settings (such as Safari/Chrome on iOS). This helps in setting the `SameSite=Strict` attribute on the cookie, allowing it to be stored properly by the browser, while also ensuring CORS compliance.
+
+### Overview
+1. **Spoofing the `Set-Cookie` Header**: The Edge Function intercepts the response from the backend and modifies the `Set-Cookie` header to set `SameSite=Strict`, ensuring the browser stores the cookie in stricter environments.
+2. **Setting `SameSite=Strict`**: The cookie’s `SameSite` attribute is modified to `Strict`, making sure it behaves correctly in browsers with stricter cookie policies, like those on mobile devices.
+3. **Ensuring CORS Compliance**: The Edge Function also ensures that CORS headers are properly set to avoid issues with cross-origin requests.
+
+### How It Works
+
+- **Production Environment**: In production, the Edge Function runs in Vercel’s Edge Network, where it intercepts responses from the backend. If a `Set-Cookie` header is present, it modifies the cookie to include `SameSite=Strict` and passes it back to the client.
+- **Development Environment**: In the development environment, we bypass the Edge Function and interact directly with the backend, as no modifications are required in this environment.
+
+### Code Flow
+
+1. **Edge Function (Vercel)**: The Edge Function intercepts the response from the backend. If a `Set-Cookie` header is present, it modifies token in the cookie by adding `SameSite=Strict` to ensure the browser handles it appropriately.
+2. **Proxy Handling (`api/proxy.ts`)**: The proxy serves as an intermediary, passing the modified cookies to the user while ensuring that the CORS headers are properly set for compliance.
+3. **Browser Behavior**: With `SameSite=Strict`, browsers like Safari and Chrome on iOS, which have stricter cookie policies, will store the cookie and send it back on subsequent requests through the proxy.
+
+This setup ensures that your authentication cookies are sent and stored properly in all environments, particularly in browsers with stricter default security policies, and ensures proper CORS handling.
+
 ## License
 
 This project is licensed under NOLICENSE - no rights are granted.
-
-## Auth Cookie Note
-
-The application uses an HTTP-only authentication cookie to manage user sessions. As this is a test assignment:
-
-- The cookie is **not marked as secure** (`Secure=false`).
-- The **SameSite** attribute is set to **`None`** (which means it can be accessed across different sites).
-
-While this allows the API to be used in local environments and deployed to my domain, browsers may treat this cookie as a tracking cookie, potentially leading to issues if **tracking** is disabled.
-
-For example, on iOS devices using Chrome and Safari, tracking is disabled by default, which might interfere with the cookie functionality. Please ensure cookies are allowed for this to work properly, especially in these environments.
-
-### Enabling Cookies for Chrome and Safari on iOS
-
-If you're using Chrome or Safari on iOS, follow these steps to allow authentication cookies:
-
-#### **Chrome (iOS)**
-1. Open **Settings** on your iPhone/iPad.
-2. Scroll down and tap **Apps**.
-3. Select **Chrome**.
-4. Find **Allow Cross-Website Tracking** and enable it.
-
-#### **Safari (iOS)**
-1. Open **Settings** on your iPhone/iPad.
-2. Scroll down and tap **Apps**.
-3. Select **Safari**.
-4. Find **Prevent Cross-Site Tracking** and disable it.
-
-Enabling these settings will allow the authentication cookie to function correctly.

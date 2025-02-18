@@ -1,5 +1,6 @@
 import { JSX } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 import HomePage from "./pages/Home.tsx";
 import LoginPage from "./pages/Login.tsx";
 import ToastContainer from "./components/ToastContainer.tsx";
@@ -25,6 +26,7 @@ const App = () => (
         <Route path="/login" element={<LoginPage />} />
       </Routes>
       <ToastContainer />
+      <SpeedInsights />
     </div>
   </Router>
 );
