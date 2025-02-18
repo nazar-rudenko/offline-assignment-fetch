@@ -7,6 +7,16 @@ export const config = {
 export default async function handler(req: Request) {
   const origin = req.headers.get("Origin");
   const requestedBy = req.headers.get("X-Requested-By");
+  const cookies = req.headers.get("Cookies");
+
+  // TODO: debugging
+  const authCookie =
+    cookies &&
+    cookies
+      .split(", ")
+      .find((cookie) => cookie.startsWith("fetch-access-token="));
+
+  console.log(`Auth: ${!!authCookie}`);
 
   if (requestedBy !== "dogs-app") {
     return new Response(JSON.stringify({ error: "Invalid Request" }), {
@@ -30,7 +40,6 @@ export default async function handler(req: Request) {
       method: req.method,
       headers: req.headers,
       body: ["GET", "HEAD"].includes(req.method) ? undefined : req.body,
-      credentials: "include",
     });
 
     const responseHeaders = new Headers(backendResponse.headers);
