@@ -33,7 +33,7 @@ export default async function handler(req: Request) {
       },
     );
 
-    const setCookieHeaders: string = backendResponse.headers.get("Set-Cookie");
+    const setCookieHeaders = backendResponse.headers.get("Set-Cookie");
     if (setCookieHeaders) {
       const modifiedCookies = setCookieHeaders
         .split(", ")
