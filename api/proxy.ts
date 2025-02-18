@@ -1,4 +1,4 @@
-import { DOMAINS, PATHS } from "../src/services/dogApi/consts";
+import { DOMAINS } from "../src/services/dogApi/consts";
 
 export const config = {
   runtime: "edge",
@@ -6,7 +6,19 @@ export const config = {
 
 export default async function handler(req: Request) {
   const origin = req.headers.get("origin");
+
+  if (!origin) {
+    return new Response(JSON.stringify({ error: "Missing Origin header" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
   const allowedOrigins = [DOMAINS.LOCAL, DOMAINS.DEPLOYMENT];
+
+  if (isMyVercelPreview(origin)) {
+    allowedOrigins.push(origin);
+  }
 
   if (req.method === "OPTIONS") {
     return new Response(null, {
@@ -16,7 +28,8 @@ export default async function handler(req: Request) {
   }
 
   const url = new URL(req.url);
-  const backendURL = PATHS.BASE + url.pathname.replace("/api", "") + url.search;
+  const backendURL =
+    DOMAINS.API + url.pathname.replace("/api", "") + url.search;
 
   try {
     const backendResponse = await fetch(backendURL, {
@@ -39,7 +52,7 @@ export default async function handler(req: Request) {
         .split(", ")
         .map((cookie) =>
           cookie.startsWith("fetch-access-token=")
-            ? makeSecureCookie(cookie)
+            ? makeCookieSecureAgain(cookie, origin)
             : cookie,
         )
         .join(", ");
@@ -83,13 +96,20 @@ function getCorsHeaders(origin: string | null, allowedOrigins: string[]) {
   return headers;
 }
 
-function makeSecureCookie(setCookieHeader: string): string {
-  return setCookieHeader
+function makeCookieSecureAgain(cookie: string, origin: string): string {
+  const domain = new URL(origin).hostname;
+  return cookie
     .replace(/;\s*Secure/i, "")
     .replace(/;\s*SameSite=[^;]*/i, "")
     .replace(/;\s*HttpOnly/i, "")
     .replace(/;\s*Domain=[^;]*/i, "")
-    .concat(
-      "; Secure; HttpOnly; SameSite=Lax; Domain=offline-assignment-fetch.vercel.app; Path=/",
-    );
+    .concat(`; Secure; HttpOnly; SameSite=Lax; Domain=${domain}; Path=/`);
+}
+
+function isMyVercelPreview(origin: string): boolean {
+  const hostname = new URL(origin).hostname;
+  return (
+    hostname.includes("offline-assignment-fetch") &&
+    hostname.endsWith(".nxracs-projects.vercel.app")
+  );
 }
