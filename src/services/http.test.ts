@@ -1,6 +1,6 @@
 import { vi, expect, it, describe, beforeEach, afterAll } from "vitest";
 import http, { QueryParams, serializeParams } from "./http";
-import { URLS } from "./dogApi/consts.ts";
+import { PATHS } from "./dogApi/consts.ts";
 
 describe("serializeParams", () => {
   it("should serialize a query with simple parameters", () => {
@@ -56,7 +56,7 @@ describe("http", () => {
 
     const result = await http({ path: "/test", method: "GET" });
     expect(result).toEqual(responseData);
-    expect(fetchMock).toHaveBeenCalledWith(`${URLS.PROXY}/test`, {
+    expect(fetchMock).toHaveBeenCalledWith(`${PATHS.PROXY}/test`, {
       credentials: "include",
       method: "GET",
       headers: { "Content-Type": "application/json" },
@@ -98,7 +98,7 @@ describe("http", () => {
     });
 
     expect(result).toEqual(responseData);
-    expect(fetchMock).toHaveBeenCalledWith(`${URLS.PROXY}/test`, {
+    expect(fetchMock).toHaveBeenCalledWith(`${PATHS.PROXY}/test`, {
       credentials: "include",
       method: "POST",
       headers: {

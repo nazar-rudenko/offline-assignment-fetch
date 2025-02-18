@@ -1,6 +1,12 @@
-export const URLS = {
-  PROXY: "https://offline-assignment-fetch.vercel.app/api",
-  BASE: "https://frontend-take-home-service.fetch.com",
+export const DOMAINS = {
+  LOCAL: "http://localhost:5173",
+  API: "https://frontend-take-home-service.fetch.com",
+  DEPLOYMENT: "https://offline-assignment-fetch.vercel.app",
+};
+
+export const PATHS = {
+  BASE: DOMAINS.API,
+  PROXY: `${DOMAINS.DEPLOYMENT}/api`,
   AUTH: {
     LOGIN: "/auth/login",
     LOGOUT: "/auth/logout",

@@ -1,4 +1,4 @@
-import { URLS } from "./dogApi/consts.ts";
+import { PATHS } from "./dogApi/consts.ts";
 
 export type SortQueryParam = { field: string; order: "asc" | "desc" };
 export type ArrayQueryParam = string[] | number[];
@@ -57,7 +57,7 @@ async function http<R = undefined>({
     request.headers = { ...request.headers, ...headers };
   }
 
-  let url = `${URLS.PROXY}${path}`;
+  let url = `${PATHS.PROXY}${path}`;
 
   const serializedParams = params && serializeParams(params);
   if (serializedParams) {

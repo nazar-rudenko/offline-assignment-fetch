@@ -7,7 +7,7 @@ import tsEslint from "typescript-eslint";
 import eslintConfigPrettier from "eslint-config-prettier";
 
 export default tsEslint.config(
-  { ignores: ["dist"] },
+  { ignores: ["dist", "api"] },
   {
     extends: [
       js.configs.recommended,

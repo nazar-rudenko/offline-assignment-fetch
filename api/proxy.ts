@@ -1,4 +1,4 @@
-import { URLS } from "../src/services/dogApi/consts";
+import { DOMAINS, PATHS } from "../src/services/dogApi/consts";
 
 export const config = {
   runtime: "edge",
@@ -6,10 +6,7 @@ export const config = {
 
 export default async function handler(req: Request) {
   const origin = req.headers.get("origin");
-  const allowedOrigins = [
-    "http://localhost:5173",
-    "https://offline-assignment-fetch.vercel.app",
-  ];
+  const allowedOrigins = [DOMAINS.LOCAL, DOMAINS.DEPLOYMENT];
 
   if (req.method === "OPTIONS") {
     return new Response(null, {
@@ -19,10 +16,7 @@ export default async function handler(req: Request) {
   }
 
   const url = new URL(req.url);
-  const backendURL = URLS.BASE + url.pathname.replace("/api", "") + url.search;
-
-  console.log(`Request URL: ${url}`);
-  console.log(`Backend URL: ${backendURL}`);
+  const backendURL = PATHS.BASE + url.pathname.replace("/api", "") + url.search;
 
   try {
     const backendResponse = await fetch(backendURL, {
@@ -39,12 +33,25 @@ export default async function handler(req: Request) {
       },
     );
 
+    const setCookieHeaders: string = backendResponse.headers.get("Set-Cookie");
+    if (setCookieHeaders) {
+      const modifiedCookies = setCookieHeaders
+        .split(", ")
+        .map((cookie) =>
+          cookie.startsWith("fetch-access-token=")
+            ? makeSecureCookie(cookie)
+            : cookie,
+        )
+        .join(", ");
+
+      responseHeaders.set("Set-Cookie", modifiedCookies);
+    }
+
     return new Response(backendResponse.body, {
       status: backendResponse.status,
       headers: responseHeaders,
     });
   } catch (err) {
-    console.error(err);
     return new Response(
       JSON.stringify({ error: "Failed to fetch from backend" }),
       {
@@ -74,4 +81,15 @@ function getCorsHeaders(origin: string | null, allowedOrigins: string[]) {
   }
 
   return headers;
+}
+
+function makeSecureCookie(setCookieHeader: string): string {
+  return setCookieHeader
+    .replace(/;\s*Secure/i, "")
+    .replace(/;\s*SameSite=[^;]*/i, "")
+    .replace(/;\s*HttpOnly/i, "")
+    .replace(/;\s*Domain=[^;]*/i, "")
+    .concat(
+      "; Secure; HttpOnly; SameSite=Lax; Domain=offline-assignment-fetch.vercel.app; Path=/",
+    );
 }
