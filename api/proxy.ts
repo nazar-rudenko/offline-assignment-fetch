@@ -1,4 +1,8 @@
-import { DOMAINS } from "../src/services/dogApi/consts";
+const DOMAINS = {
+  LOCAL: "http://localhost:5173",
+  API: "https://frontend-take-home-service.fetch.com",
+  DEPLOYMENT: "https://offline-assignment-fetch.vercel.app",
+};
 
 export const config = {
   runtime: "edge",
