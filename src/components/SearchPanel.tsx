@@ -21,14 +21,18 @@ const SearchPanel = () => {
         )}
       </div>
       <aside
-        className={`${isSearchOpen ? "block" : "hidden"} p-4 space-y-4 md:block`}
+        className={`overflow-hidden transition-all duration-300 md:block 
+        ${isSearchOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"} 
+        space-y-4 md:max-h-none md:opacity-100`}
       >
-        <div className="divider">Breeds</div>
-        <BreedFilter />
-        <div className="divider">Age</div>
-        <AgeSelector />
-        <div className="divider">Zip</div>
-        <ZipFilter />
+        <div className="p-4 pt-0 md:pt-4">
+          <div className="divider">Breeds</div>
+          <BreedFilter />
+          <div className="divider">Age</div>
+          <AgeSelector />
+          <div className="divider">Zip</div>
+          <ZipFilter />
+        </div>
       </aside>
     </div>
   );
