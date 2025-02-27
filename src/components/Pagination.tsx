@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import {
   ChevronFirst,
   ChevronLeft,
@@ -14,8 +15,6 @@ const Pagination = () => {
   const page = useDogStore((state) => state.page);
   const totalPages = useDogStore((state) => state.totalPages);
 
-  if (totalPages <= 1) return null;
-
   const pages = getPaginationPages({
     page,
     totalPages,
@@ -23,9 +22,14 @@ const Pagination = () => {
   });
 
   const handlePageChange = (page: number) => () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
     updatePage(page);
   };
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [page]);
+
+  if (totalPages <= 1) return null;
 
   return (
     <div className="flex justify-center mt-4">
