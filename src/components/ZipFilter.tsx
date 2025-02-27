@@ -52,7 +52,7 @@ const ZipFilter = () => {
           +
         </button>
       </div>
-      <div className="flex flex-wrap gap-1 space-y-1 max-h-50 overflow-y-auto hide-scrollbar">
+      <div className="flex flex-wrap pt-4 gap-1 space-y-1 max-h-50 overflow-y-auto hide-scrollbar">
         {filter.zipCodes?.map((zip) => (
           <button
             onClick={removeZipCode(zip)}
